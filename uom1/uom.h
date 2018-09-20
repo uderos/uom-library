@@ -1,6 +1,10 @@
 #ifndef UDR_UOM_H
 #define UDR_UOM_H
 
+#ifdef OUM_STRING_SUPPORT
+#include <sstream>
+#endif // OUM_STRING_SUPPORT
+
 namespace uom
 {
 
@@ -17,13 +21,19 @@ struct quantity_t
 	quantity_t(const VALUE_T & init_value);
 	quantity_t(const quantity_t<MASS, LENGTH, TIME, CHARGE, VALUE_T> & rv);
 
-	VALUE_T value;
+	VALUE_T value; // The *only* data member - keep it this way
 };
 
 template <int MASS, int LENGTH, int TIME, int CHARGE, typename VALUE_T = double>
 quantity_t<MASS, LENGTH, TIME, CHARGE, VALUE_T>::quantity_t() :
 	value(VALUE_T(0))
 {
+	static_assert(
+		sizeof(quantity_t<MASS, LENGTH, TIME, CHARGE, VALUE_T>) ==
+		sizeof(quantity_t<MASS, LENGTH, TIME, CHARGE, VALUE_T>::value_type));
+	static_assert(
+		sizeof(quantity_t<MASS, LENGTH, TIME, CHARGE, VALUE_T>) ==
+		sizeof(this->value));
 }
 
 template <int MASS, int LENGTH, int TIME, int CHARGE, typename VALUE_T>
@@ -38,41 +48,6 @@ quantity_t<MASS, LENGTH, TIME, CHARGE, VALUE_T>::quantity_t(
 	value(rv.value)
 {
 }
-
-#ifdef OUM_STRING_SUPPORT
-
-template <typename QUANTITY_T, typename CHAR_T = char>
-std::basic_string<CHAR_T> to_string(const QUANTITY_T & q)
-{
-	std::basic_stringstream<CHAR_T> oss;
-	oss << q.value;
-	if (QUANTITY_T::mass())
-	{
-		oss << 'M';
-		if (QUANTITY_T::mass() != 1) oss << QUANTITY_T::mass();
-	}
-	if (QUANTITY_T::length())
-	{
-		oss << 'L';
-		if (QUANTITY_T::length() != 1) oss << QUANTITY_T::length();
-	}
-	if (QUANTITY_T::time())
-	{
-		oss << 'T';
-		if (QUANTITY_T::time() != 1) oss << QUANTITY_T::time();
-	}
-
-	if (QUANTITY_T::charge())
-	{
-		oss << 'Q';
-		if (QUANTITY_T::charge() != 1) oss << QUANTITY_T::charge();
-	}
-
-	return oss.str();
-}
-
-#endif // OUM_STRING_SUPPORT
-
 
 template <int MASS, int LENGTH, int TIME, int CHARGE, typename VALUE_T>
 quantity_t<MASS, LENGTH, TIME, CHARGE, VALUE_T>
@@ -141,6 +116,40 @@ operator/(const VALUE_T & f, const quantity_t<MASS, LENGTH, TIME, CHARGE, VALUE_
 {
 	return quantity_t<MASS, LENGTH, TIME, CHARGE, VALUE_T>(f / a.value);
 }
+
+
+#ifdef OUM_STRING_SUPPORT
+template <typename QUANTITY_T, typename CHAR_T = char>
+std::basic_string<CHAR_T> to_string(const QUANTITY_T & q)
+{
+	std::basic_stringstream<CHAR_T> oss;
+	oss << q.value;
+	if (QUANTITY_T::mass())
+	{
+		oss << 'M';
+		if (QUANTITY_T::mass() != 1) oss << QUANTITY_T::mass();
+	}
+	if (QUANTITY_T::length())
+	{
+		oss << 'L';
+		if (QUANTITY_T::length() != 1) oss << QUANTITY_T::length();
+	}
+	if (QUANTITY_T::time())
+	{
+		oss << 'T';
+		if (QUANTITY_T::time() != 1) oss << QUANTITY_T::time();
+	}
+
+	if (QUANTITY_T::charge())
+	{
+		oss << 'Q';
+		if (QUANTITY_T::charge() != 1) oss << QUANTITY_T::charge();
+	}
+
+	return oss.str();
+}
+
+#endif // OUM_STRING_SUPPORT
 
 
 
