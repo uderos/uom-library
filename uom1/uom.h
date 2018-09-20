@@ -7,14 +7,15 @@ namespace uom
 template <int MASS, int LENGTH, int TIME, int CHARGE = 0, typename VALUE_T = double>
 struct quantity_t
 {
+	using value_type = VALUE_T;
+	static constexpr int mass() { return MASS; }
+	static constexpr int length() { return LENGTH; }
+	static constexpr int time() { return TIME; }
+	static constexpr int charge() { return CHARGE; }
+
 	quantity_t();
 	quantity_t(const VALUE_T & init_value);
 	quantity_t(const quantity_t<MASS, LENGTH, TIME, CHARGE, VALUE_T> & rv);
-
-	static constexpr int mass() 	{ return MASS; }
-	static constexpr int length() 	{ return LENGTH; }
-	static constexpr int time() 	{ return TIME; }
-	static constexpr int charge() 	{ return CHARGE; }
 
 	VALUE_T value;
 };
@@ -40,36 +41,6 @@ quantity_t<MASS, LENGTH, TIME, CHARGE, VALUE_T>::quantity_t(
 
 #ifdef OUM_STRING_SUPPORT
 
-//template <int MASS, int LENGTH, int TIME, int CHARGE, typename VALUE_T, typename CHAR_T = char>
-//std::basic_string<CHAR_T> to_string(const quantity_t<MASS, LENGTH, TIME, CHARGE, VALUE_T> & q)
-//{
-//	std::basic_stringstream<CHAR_T> oss;
-//	oss << q.value;
-//	if (MASS)
-//	{
-//		oss << ' ' << 'M';
-//		if (MASS != 1) oss << MASS;
-//	}
-//	if (LENGTH)
-//	{
-//		oss << 'L';
-//		if (LENGTH != 1) oss << LENGTH;
-//	}
-//	if (TIME)
-//	{
-//		oss << 'T';
-//		if (TIME != 1) oss << TIME;
-//	}
-//
-//	if (CHARGE)
-//	{
-//		oss << 'Q';
-//		if (CHARGE != 1) oss << CHARGE;
-//	}
-//
-//	return oss.str();
-//}
-
 template <typename QUANTITY_T, typename CHAR_T = char>
 std::basic_string<CHAR_T> to_string(const QUANTITY_T & q)
 {
@@ -77,7 +48,7 @@ std::basic_string<CHAR_T> to_string(const QUANTITY_T & q)
 	oss << q.value;
 	if (QUANTITY_T::mass())
 	{
-		oss << ' ' << 'M';
+		oss << 'M';
 		if (QUANTITY_T::mass() != 1) oss << QUANTITY_T::mass();
 	}
 	if (QUANTITY_T::length())
@@ -130,6 +101,21 @@ operator*(const quantity_t<MASS1, LENGTH1, TIME1, CHARGE1, VALUE_T> & a,
 		a.value * b.value);
 }
 
+template <int MASS, int LENGTH, int TIME, int CHARGE, typename VALUE_T>
+quantity_t<MASS, LENGTH, TIME, CHARGE, VALUE_T>
+operator*(const quantity_t<MASS, LENGTH, TIME, CHARGE, VALUE_T> & a, const VALUE_T & f)
+{
+	return quantity_t<MASS, LENGTH, TIME, CHARGE, VALUE_T>(a.value * f);
+}
+
+template <int MASS, int LENGTH, int TIME, int CHARGE, typename VALUE_T>
+quantity_t<MASS, LENGTH, TIME, CHARGE, VALUE_T>
+operator*(const VALUE_T & f, const quantity_t<MASS, LENGTH, TIME, CHARGE, VALUE_T> & a)
+	
+{
+	return quantity_t<MASS, LENGTH, TIME, CHARGE, VALUE_T>(f * a.value);
+}
+
 template <int MASS1, int LENGTH1, int TIME1, int CHARGE1, 
 		  int MASS2, int LENGTH2, int TIME2, int CHARGE2,
 		  typename VALUE_T>
@@ -140,6 +126,24 @@ operator/(const quantity_t<MASS1, LENGTH1, TIME1, CHARGE1, VALUE_T> & a,
 	return quantity_t<MASS1 - MASS2, LENGTH1 - LENGTH2, TIME1 - TIME2, CHARGE1 - CHARGE2, VALUE_T>(
 		a.value / b.value);
 }
+
+template <int MASS, int LENGTH, int TIME, int CHARGE, typename VALUE_T>
+quantity_t<MASS, LENGTH, TIME, CHARGE, VALUE_T>
+operator/(const quantity_t<MASS, LENGTH, TIME, CHARGE, VALUE_T> & a, const VALUE_T & f)
+{
+	return quantity_t<MASS, LENGTH, TIME, CHARGE, VALUE_T>(a.value / f);
+}
+
+template <int MASS, int LENGTH, int TIME, int CHARGE, typename VALUE_T>
+quantity_t<MASS, LENGTH, TIME, CHARGE, VALUE_T>
+operator/(const VALUE_T & f, const quantity_t<MASS, LENGTH, TIME, CHARGE, VALUE_T> & a)
+
+{
+	return quantity_t<MASS, LENGTH, TIME, CHARGE, VALUE_T>(f / a.value);
+}
+
+
+
 
 template <typename VALUE_T = double>
 using length_t = quantity_t<0, 1, 0, 0, VALUE_T>;
