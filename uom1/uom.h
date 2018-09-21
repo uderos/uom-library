@@ -5,6 +5,10 @@
 #include <sstream>
 #endif // OUM_STRING_SUPPORT
 
+///////////////////////////////////////////////////////////////////////
+// Some utility macros to help writing down the templates
+///////////////////////////////////////////////////////////////////////
+
 #define UOM_MEASURE_LIST MASS, LENGTH, TIME, ECURRENT, TEMPERATURE, AMOUNT, LUMINTENSITY
 #define UOM_MEASURE_TEMPLATE_LIST	\
 	int MASS,						\
@@ -39,6 +43,9 @@
 namespace uom
 {
 
+///////////////////////////////////////////////////////////////////////
+// The template structure used to define a qualtity with its dimentions
+///////////////////////////////////////////////////////////////////////
 template <UOM_MEASURE_TEMPLATE_LIST, typename VALUE_T = double>
 struct quantity_t
 {
@@ -84,6 +91,7 @@ quantity_t<UOM_MEASURE_LIST, VALUE_T>::quantity_t(
 }
 
 template <UOM_MEASURE_TEMPLATE_LIST, typename VALUE_T>
+inline
 quantity_t<UOM_MEASURE_LIST, VALUE_T>
 operator+(const quantity_t<UOM_MEASURE_LIST, VALUE_T> & a,
 		  const quantity_t<UOM_MEASURE_LIST, VALUE_T> & b)
@@ -92,6 +100,7 @@ operator+(const quantity_t<UOM_MEASURE_LIST, VALUE_T> & a,
 }
 
 template <UOM_MEASURE_TEMPLATE_LIST, typename VALUE_T>
+inline 
 quantity_t<UOM_MEASURE_LIST, VALUE_T>
 operator-(const quantity_t<UOM_MEASURE_LIST, VALUE_T> & a,
 		  const quantity_t<UOM_MEASURE_LIST, VALUE_T> & b)
@@ -100,7 +109,8 @@ operator-(const quantity_t<UOM_MEASURE_LIST, VALUE_T> & a,
 }
 
 template <UOM_MEASURE_TEMPLATE_LIST1, UOM_MEASURE_TEMPLATE_LIST2, typename VALUE_T>
-quantity_t<	
+inline
+quantity_t<
 	MASS1 + MASS2, 
 	LENGTH1 + LENGTH2, 
 	TIME1 + TIME2, 
@@ -124,6 +134,7 @@ operator*(const quantity_t<UOM_MEASURE_LIST1, VALUE_T> & a,
 }
 
 template <UOM_MEASURE_TEMPLATE_LIST, typename VALUE_T>
+inline
 quantity_t<UOM_MEASURE_LIST, VALUE_T>
 operator*(const quantity_t<UOM_MEASURE_LIST, VALUE_T> & a, const VALUE_T & f)
 {
@@ -131,6 +142,7 @@ operator*(const quantity_t<UOM_MEASURE_LIST, VALUE_T> & a, const VALUE_T & f)
 }
 
 template <UOM_MEASURE_TEMPLATE_LIST, typename VALUE_T>
+inline
 quantity_t<UOM_MEASURE_LIST, VALUE_T>
 operator*(const VALUE_T & f, const quantity_t<UOM_MEASURE_LIST, VALUE_T> & a)
 	
@@ -139,6 +151,7 @@ operator*(const VALUE_T & f, const quantity_t<UOM_MEASURE_LIST, VALUE_T> & a)
 }
 
 template <UOM_MEASURE_TEMPLATE_LIST1, UOM_MEASURE_TEMPLATE_LIST2, typename VALUE_T>
+inline
 quantity_t<
 	MASS1 - MASS2,
 	LENGTH1 - LENGTH2,
@@ -163,6 +176,7 @@ quantity_t<
 }
 
 template <UOM_MEASURE_TEMPLATE_LIST, typename VALUE_T>
+inline
 quantity_t<UOM_MEASURE_LIST, VALUE_T>
 operator/(const quantity_t<UOM_MEASURE_LIST, VALUE_T> & a, const VALUE_T & f)
 {
@@ -170,6 +184,7 @@ operator/(const quantity_t<UOM_MEASURE_LIST, VALUE_T> & a, const VALUE_T & f)
 }
 
 template <UOM_MEASURE_TEMPLATE_LIST, typename VALUE_T>
+inline
 quantity_t<UOM_MEASURE_LIST, VALUE_T>
 operator/(const VALUE_T & f, const quantity_t<UOM_MEASURE_LIST, VALUE_T> & a)
 
@@ -178,7 +193,9 @@ operator/(const VALUE_T & f, const quantity_t<UOM_MEASURE_LIST, VALUE_T> & a)
 }
 
 
-
+///////////////////////////////////////////////////////////////////////
+// Definitions of each SI base dimensions
+///////////////////////////////////////////////////////////////////////
 template <typename VALUE_T = double>
 using mass_t = quantity_t<1, 0, 0, 0, 0, 0, 0, VALUE_T>;
 
@@ -200,6 +217,11 @@ using amount_t = quantity_t<0, 0, 0, 0, 0, 1, 0, VALUE_T>;
 template <typename VALUE_T = double>
 using luminosity_t = quantity_t<0, 0, 0, 0, 0, 0, 1, VALUE_T>;
 
+
+///////////////////////////////////////////////////////////////////////
+// Definitions of some composite dimensions
+///////////////////////////////////////////////////////////////////////
+
 template <typename VALUE_T = double>
 using speed_t = quantity_t<0, 1, -1, 0, 0, 0, 0, VALUE_T>;
 
@@ -215,6 +237,10 @@ using energy_t = quantity_t<1, 2, -2, 0, 0, 0, 0, VALUE_T>;
 template <typename VALUE_T = double>
 using epotential_t = quantity_t<1, 2, -3, -1, 0, 0, 0, VALUE_T>;
 
+
+///////////////////////////////////////////////////////////////////////
+// Utility: string conversion
+///////////////////////////////////////////////////////////////////////
 #ifdef OUM_STRING_SUPPORT
 template <typename QUANTITY_T, typename CHAR_T = char>
 std::basic_string<CHAR_T> to_string(const QUANTITY_T & q)
@@ -265,7 +291,15 @@ std::basic_string<CHAR_T> to_string(const QUANTITY_T & q)
 }
 #endif // OUM_STRING_SUPPORT
 
-
 }; // namespace uom
 
-#endif UDR_UOM_H
+
+// Un-define the utility macros
+#undef UOM_MEASURE_LIST
+#undef UOM_MEASURE_TEMPLATE_LIST
+#undef UOM_MEASURE_LIST1
+#undef UOM_MEASURE_TEMPLATE_LIST1
+#undef UOM_MEASURE_LIST2
+#undef UOM_MEASURE_TEMPLATE_LIST2
+
+#endif // UDR_UOM_H
