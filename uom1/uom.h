@@ -5,10 +5,41 @@
 #include <sstream>
 #endif // OUM_STRING_SUPPORT
 
+#define UOM_MEASURE_LIST MASS, LENGTH, TIME, ECURRENT, TEMPERATURE, AMOUNT, LUMINTENSITY
+#define UOM_MEASURE_TEMPLATE_LIST	\
+	int MASS,						\
+	int LENGTH,						\
+	int TIME,						\
+	int ECURRENT,					\
+	int TEMPERATURE,				\
+	int AMOUNT,						\
+	int LUMINTENSITY				\
+
+#define UOM_MEASURE_LIST1 MASS1, LENGTH1, TIME1, ECURRENT1, TEMPERATURE1, AMOUNT1, LUMINOSITY1
+#define UOM_MEASURE_TEMPLATE_LIST1	\
+	int MASS1,						\
+	int LENGTH1,					\
+	int TIME1,						\
+	int ECURRENT1,					\
+	int TEMPERATURE1,				\
+	int AMOUNT1,					\
+	int LUMINOSITY1					\
+
+#define UOM_MEASURE_LIST2 MASS2, LENGTH2, TIME2, ECURRENT2, TEMPERATURE2, AMOUNT2, LUMINOSITY2
+#define UOM_MEASURE_TEMPLATE_LIST2	\
+	int MASS2,						\
+	int LENGTH2,					\
+	int TIME2,						\
+	int ECURRENT2,					\
+	int TEMPERATURE2,				\
+	int AMOUNT2,					\
+	int LUMINOSITY2					\
+
+
 namespace uom
 {
 
-template <int MASS, int LENGTH, int TIME, int ECURRENT = 0, typename VALUE_T = double>
+template <UOM_MEASURE_TEMPLATE_LIST, typename VALUE_T = double>
 struct quantity_t
 {
 	using value_type = VALUE_T;
@@ -16,135 +47,173 @@ struct quantity_t
 	static constexpr int length() { return LENGTH; }
 	static constexpr int time() { return TIME; }
 	static constexpr int ecurrent() { return ECURRENT; }
+	static constexpr int temperature() { return TEMPERATURE; }
+	static constexpr int amount() { return AMOUNT; }
+	static constexpr int luminosity() { return LUMINTENSITY; }
 
 	quantity_t();
 	quantity_t(const VALUE_T & init_value);
-	quantity_t(const quantity_t<MASS, LENGTH, TIME, ECURRENT, VALUE_T> & rv);
+	quantity_t(const quantity_t<UOM_MEASURE_LIST, VALUE_T> & rv);
 
 	VALUE_T value; // The *only* data member - keep it this way
 };
 
-template <int MASS, int LENGTH, int TIME, int ECURRENT, typename VALUE_T = double>
-quantity_t<MASS, LENGTH, TIME, ECURRENT, VALUE_T>::quantity_t() :
+template <UOM_MEASURE_TEMPLATE_LIST, typename VALUE_T = double>
+quantity_t<UOM_MEASURE_LIST, VALUE_T>::quantity_t() :
 	value(VALUE_T(0))
 {
 	static_assert(
-		sizeof(quantity_t<MASS, LENGTH, TIME, ECURRENT, VALUE_T>) ==
-		sizeof(quantity_t<MASS, LENGTH, TIME, ECURRENT, VALUE_T>::value_type));
+		sizeof(quantity_t<UOM_MEASURE_LIST, VALUE_T>) ==
+		sizeof(quantity_t<UOM_MEASURE_LIST, VALUE_T>::value_type));
 	static_assert(
-		sizeof(quantity_t<MASS, LENGTH, TIME, ECURRENT, VALUE_T>) ==
+		sizeof(quantity_t<UOM_MEASURE_LIST, VALUE_T>) ==
 		sizeof(this->value));
 }
 
-template <int MASS, int LENGTH, int TIME, int ECURRENT, typename VALUE_T>
-quantity_t<MASS, LENGTH, TIME, ECURRENT, VALUE_T>::quantity_t(const VALUE_T & init_value) :
+template <UOM_MEASURE_TEMPLATE_LIST, typename VALUE_T>
+quantity_t<UOM_MEASURE_LIST, VALUE_T>::quantity_t(const VALUE_T & init_value) :
 	value(init_value)
 {
 }
 
-template <int MASS, int LENGTH, int TIME, int ECURRENT, typename VALUE_T = double>
-quantity_t<MASS, LENGTH, TIME, ECURRENT, VALUE_T>::quantity_t(
-		const quantity_t<MASS, LENGTH, TIME, ECURRENT, VALUE_T> & rv) :
+template <UOM_MEASURE_TEMPLATE_LIST, typename VALUE_T = double>
+quantity_t<UOM_MEASURE_LIST, VALUE_T>::quantity_t(
+		const quantity_t<UOM_MEASURE_LIST, VALUE_T> & rv) :
 	value(rv.value)
 {
 }
 
-template <int MASS, int LENGTH, int TIME, int ECURRENT, typename VALUE_T>
-quantity_t<MASS, LENGTH, TIME, ECURRENT, VALUE_T>
-operator+(const quantity_t<MASS, LENGTH, TIME, ECURRENT, VALUE_T> & a,
-		  const quantity_t<MASS, LENGTH, TIME, ECURRENT, VALUE_T> & b)
+template <UOM_MEASURE_TEMPLATE_LIST, typename VALUE_T>
+quantity_t<UOM_MEASURE_LIST, VALUE_T>
+operator+(const quantity_t<UOM_MEASURE_LIST, VALUE_T> & a,
+		  const quantity_t<UOM_MEASURE_LIST, VALUE_T> & b)
 {
-	return quantity_t<MASS, LENGTH, TIME, ECURRENT, VALUE_T>(a.value + b.value);
+	return quantity_t<UOM_MEASURE_LIST, VALUE_T>(a.value + b.value);
 }
 
-template <int MASS, int LENGTH, int TIME, int ECURRENT, typename VALUE_T>
-quantity_t<MASS, LENGTH, TIME, ECURRENT, VALUE_T>
-operator-(const quantity_t<MASS, LENGTH, TIME, ECURRENT, VALUE_T> & a,
-		  const quantity_t<MASS, LENGTH, TIME, ECURRENT, VALUE_T> & b)
+template <UOM_MEASURE_TEMPLATE_LIST, typename VALUE_T>
+quantity_t<UOM_MEASURE_LIST, VALUE_T>
+operator-(const quantity_t<UOM_MEASURE_LIST, VALUE_T> & a,
+		  const quantity_t<UOM_MEASURE_LIST, VALUE_T> & b)
 {
-	return quantity_t<MASS, LENGTH, TIME, ECURRENT, VALUE_T>(a.value - b.value);
+	return quantity_t<UOM_MEASURE_LIST, VALUE_T>(a.value - b.value);
 }
 
-template <int MASS1, int LENGTH1, int TIME1, int CHARGE1, 
-		  int MASS2, int LENGTH2, int TIME2, int CHARGE2,
-		  typename VALUE_T>
-quantity_t<MASS1 + MASS2, LENGTH1 + LENGTH2, TIME1 + TIME2, CHARGE1 + CHARGE2, VALUE_T>
-operator*(const quantity_t<MASS1, LENGTH1, TIME1, CHARGE1, VALUE_T> & a,
-		  const quantity_t<MASS2, LENGTH2, TIME2, CHARGE2, VALUE_T> & b)
+template <UOM_MEASURE_TEMPLATE_LIST1, UOM_MEASURE_TEMPLATE_LIST2, typename VALUE_T>
+quantity_t<	
+	MASS1 + MASS2, 
+	LENGTH1 + LENGTH2, 
+	TIME1 + TIME2, 
+	ECURRENT1 + ECURRENT2, 
+	TEMPERATURE1 + TEMPERATURE2,
+	AMOUNT1 + AMOUNT2,
+	LUMINOSITY1 + LUMINOSITY2,
+	VALUE_T>
+operator*(const quantity_t<UOM_MEASURE_LIST1, VALUE_T> & a,
+		  const quantity_t<UOM_MEASURE_LIST2, VALUE_T> & b)
 {
-	return quantity_t<MASS1 + MASS2, LENGTH1 + LENGTH2, TIME1 + TIME2, CHARGE1 + CHARGE2, VALUE_T>(
-		a.value * b.value);
+	return quantity_t<
+		MASS1 + MASS2,
+		LENGTH1 + LENGTH2,
+		TIME1 + TIME2,
+		ECURRENT1 + ECURRENT2,
+		TEMPERATURE1 + TEMPERATURE2,
+		AMOUNT1 + AMOUNT2,
+		LUMINOSITY1 + LUMINOSITY2,
+		VALUE_T>(a.value * b.value);
 }
 
-template <int MASS, int LENGTH, int TIME, int ECURRENT, typename VALUE_T>
-quantity_t<MASS, LENGTH, TIME, ECURRENT, VALUE_T>
-operator*(const quantity_t<MASS, LENGTH, TIME, ECURRENT, VALUE_T> & a, const VALUE_T & f)
+template <UOM_MEASURE_TEMPLATE_LIST, typename VALUE_T>
+quantity_t<UOM_MEASURE_LIST, VALUE_T>
+operator*(const quantity_t<UOM_MEASURE_LIST, VALUE_T> & a, const VALUE_T & f)
 {
-	return quantity_t<MASS, LENGTH, TIME, ECURRENT, VALUE_T>(a.value * f);
+	return quantity_t<UOM_MEASURE_LIST, VALUE_T>(a.value * f);
 }
 
-template <int MASS, int LENGTH, int TIME, int ECURRENT, typename VALUE_T>
-quantity_t<MASS, LENGTH, TIME, ECURRENT, VALUE_T>
-operator*(const VALUE_T & f, const quantity_t<MASS, LENGTH, TIME, ECURRENT, VALUE_T> & a)
+template <UOM_MEASURE_TEMPLATE_LIST, typename VALUE_T>
+quantity_t<UOM_MEASURE_LIST, VALUE_T>
+operator*(const VALUE_T & f, const quantity_t<UOM_MEASURE_LIST, VALUE_T> & a)
 	
 {
-	return quantity_t<MASS, LENGTH, TIME, ECURRENT, VALUE_T>(f * a.value);
+	return quantity_t<UOM_MEASURE_LIST, VALUE_T>(f * a.value);
 }
 
-template <int MASS1, int LENGTH1, int TIME1, int CHARGE1, 
-		  int MASS2, int LENGTH2, int TIME2, int CHARGE2,
-		  typename VALUE_T>
-quantity_t<MASS1 - MASS2, LENGTH1 - LENGTH2, TIME1 - TIME2, CHARGE1 - CHARGE2, VALUE_T>
-operator/(const quantity_t<MASS1, LENGTH1, TIME1, CHARGE1, VALUE_T> & a,
-		  const quantity_t<MASS2, LENGTH2, TIME2, CHARGE2, VALUE_T> & b)
+template <UOM_MEASURE_TEMPLATE_LIST1, UOM_MEASURE_TEMPLATE_LIST2, typename VALUE_T>
+quantity_t<
+	MASS1 - MASS2,
+	LENGTH1 - LENGTH2,
+	TIME1 - TIME2,
+	ECURRENT1 - ECURRENT2,
+	TEMPERATURE1 - TEMPERATURE2,
+	AMOUNT1 - AMOUNT2,
+	LUMINOSITY1 - LUMINOSITY2,
+	VALUE_T>
+	operator/(const quantity_t<UOM_MEASURE_LIST1, VALUE_T> & a,
+			  const quantity_t<UOM_MEASURE_LIST2, VALUE_T> & b)
 {
-	return quantity_t<MASS1 - MASS2, LENGTH1 - LENGTH2, TIME1 - TIME2, CHARGE1 - CHARGE2, VALUE_T>(
-		a.value / b.value);
+	return quantity_t<
+		MASS1 - MASS2,
+		LENGTH1 - LENGTH2,
+		TIME1 - TIME2,
+		ECURRENT1 - ECURRENT2,
+		TEMPERATURE1 - TEMPERATURE2,
+		AMOUNT1 - AMOUNT2,
+		LUMINOSITY1 - LUMINOSITY2,
+		VALUE_T>(a.value * b.value);
 }
 
-template <int MASS, int LENGTH, int TIME, int ECURRENT, typename VALUE_T>
-quantity_t<MASS, LENGTH, TIME, ECURRENT, VALUE_T>
-operator/(const quantity_t<MASS, LENGTH, TIME, ECURRENT, VALUE_T> & a, const VALUE_T & f)
+template <UOM_MEASURE_TEMPLATE_LIST, typename VALUE_T>
+quantity_t<UOM_MEASURE_LIST, VALUE_T>
+operator/(const quantity_t<UOM_MEASURE_LIST, VALUE_T> & a, const VALUE_T & f)
 {
-	return quantity_t<MASS, LENGTH, TIME, ECURRENT, VALUE_T>(a.value / f);
+	return quantity_t<UOM_MEASURE_LIST, VALUE_T>(a.value / f);
 }
 
-template <int MASS, int LENGTH, int TIME, int ECURRENT, typename VALUE_T>
-quantity_t<MASS, LENGTH, TIME, ECURRENT, VALUE_T>
-operator/(const VALUE_T & f, const quantity_t<MASS, LENGTH, TIME, ECURRENT, VALUE_T> & a)
+template <UOM_MEASURE_TEMPLATE_LIST, typename VALUE_T>
+quantity_t<UOM_MEASURE_LIST, VALUE_T>
+operator/(const VALUE_T & f, const quantity_t<UOM_MEASURE_LIST, VALUE_T> & a)
 
 {
-	return quantity_t<MASS, LENGTH, TIME, ECURRENT, VALUE_T>(f / a.value);
+	return quantity_t<UOM_MEASURE_LIST, VALUE_T>(f / a.value);
 }
 
 
 
 template <typename VALUE_T = double>
-using mass_t = quantity_t<1, 0, 0, 0, VALUE_T>;
+using mass_t = quantity_t<1, 0, 0, 0, 0, 0, 0, VALUE_T>;
 
 template <typename VALUE_T = double>
-using length_t = quantity_t<0, 1, 0, 0, VALUE_T>;
+using length_t = quantity_t<0, 1, 0, 0, 0, 0, 0, VALUE_T>;
 
 template <typename VALUE_T = double>
-using time_t = quantity_t<0, 0, 1, 0, VALUE_T>;
+using time_t = quantity_t<0, 0, 1, 0, 0, 0, 0, VALUE_T>;
 
 template <typename VALUE_T = double>
-using ecurrent_t = quantity_t<0, 0, 0, 1, VALUE_T>;
+using ecurrent_t = quantity_t<0, 0, 0, 1, 0, 0, 0, VALUE_T>;
 
 template <typename VALUE_T = double>
-using speed_t = quantity_t<0, 1, -1, 0, VALUE_T>;
+using temperature_t = quantity_t<0, 0, 0, 0, 1, 0, 0, VALUE_T>;
 
 template <typename VALUE_T = double>
-using acceleration_t = quantity_t<0, 1, -2, 0, VALUE_T>;
+using amount_t = quantity_t<0, 0, 0, 0, 0, 1, 0, VALUE_T>;
 
 template <typename VALUE_T = double>
-using force_t = quantity_t<1, 1, -2, 0, VALUE_T>;
+using luminosity_t = quantity_t<0, 0, 0, 0, 0, 0, 1, VALUE_T>;
 
 template <typename VALUE_T = double>
-using energy_t = quantity_t<1, 2, -2, 0, VALUE_T>;
+using speed_t = quantity_t<0, 1, -1, 0, 0, 0, 0, VALUE_T>;
 
 template <typename VALUE_T = double>
-using epotential_t = quantity_t<1, 2, -3, -1, VALUE_T>;
+using acceleration_t = quantity_t<0, 1, -2, 0, 0, 0, 0, VALUE_T>;
+
+template <typename VALUE_T = double>
+using force_t = quantity_t<1, 1, -2, 0, 0, 0, 0, VALUE_T>;
+
+template <typename VALUE_T = double>
+using energy_t = quantity_t<1, 2, -2, 0, 0, 0, 0, VALUE_T>;
+
+template <typename VALUE_T = double>
+using epotential_t = quantity_t<1, 2, -3, -1, 0, 0, 0, VALUE_T>;
 
 #ifdef OUM_STRING_SUPPORT
 template <typename QUANTITY_T, typename CHAR_T = char>
@@ -172,6 +241,24 @@ std::basic_string<CHAR_T> to_string(const QUANTITY_T & q)
 	{
 		oss << 'E';
 		if (QUANTITY_T::ecurrent() != 1) oss << QUANTITY_T::ecurrent();
+	}
+
+	if (QUANTITY_T::temperature())
+	{
+		oss << 't';
+		if (QUANTITY_T::temperature() != 1) oss << QUANTITY_T::temperature();
+	}
+
+	if (QUANTITY_T::amount())
+	{
+		oss << 'a';
+		if (QUANTITY_T::amount() != 1) oss << QUANTITY_T::amount();
+	}
+
+	if (QUANTITY_T::luminosity())
+	{
+		oss << 'l';
+		if (QUANTITY_T::luminosity() != 1) oss << QUANTITY_T::luminosity();
 	}
 
 	return oss.str();
