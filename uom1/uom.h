@@ -65,6 +65,7 @@ struct quantity_t
 	VALUE_T value; // The *only* data member - keep it this way
 };
 
+// Default constructor
 template <UOM_MEASURE_TEMPLATE_LIST, typename VALUE_T = double>
 quantity_t<UOM_MEASURE_LIST, VALUE_T>::quantity_t() :
 	value(VALUE_T(0))
@@ -77,12 +78,14 @@ quantity_t<UOM_MEASURE_LIST, VALUE_T>::quantity_t() :
 		sizeof(this->value));
 }
 
+// Non-default Constructor
 template <UOM_MEASURE_TEMPLATE_LIST, typename VALUE_T>
 quantity_t<UOM_MEASURE_LIST, VALUE_T>::quantity_t(const VALUE_T & init_value) :
 	value(init_value)
 {
 }
 
+// Copy constructor
 template <UOM_MEASURE_TEMPLATE_LIST, typename VALUE_T = double>
 quantity_t<UOM_MEASURE_LIST, VALUE_T>::quantity_t(
 		const quantity_t<UOM_MEASURE_LIST, VALUE_T> & rv) :
@@ -90,6 +93,7 @@ quantity_t<UOM_MEASURE_LIST, VALUE_T>::quantity_t(
 {
 }
 
+// Sum operator
 template <UOM_MEASURE_TEMPLATE_LIST, typename VALUE_T>
 inline
 quantity_t<UOM_MEASURE_LIST, VALUE_T>
@@ -99,6 +103,7 @@ operator+(const quantity_t<UOM_MEASURE_LIST, VALUE_T> & a,
 	return quantity_t<UOM_MEASURE_LIST, VALUE_T>(a.value + b.value);
 }
 
+// Subtraction operator
 template <UOM_MEASURE_TEMPLATE_LIST, typename VALUE_T>
 inline 
 quantity_t<UOM_MEASURE_LIST, VALUE_T>
@@ -108,6 +113,7 @@ operator-(const quantity_t<UOM_MEASURE_LIST, VALUE_T> & a,
 	return quantity_t<UOM_MEASURE_LIST, VALUE_T>(a.value - b.value);
 }
 
+// Multiplication of two quantities
 template <UOM_MEASURE_TEMPLATE_LIST1, UOM_MEASURE_TEMPLATE_LIST2, typename VALUE_T>
 inline
 quantity_t<
@@ -133,6 +139,7 @@ operator*(const quantity_t<UOM_MEASURE_LIST1, VALUE_T> & a,
 		VALUE_T>(a.value * b.value);
 }
 
+// Multiplication: quantities times dimensionless factor
 template <UOM_MEASURE_TEMPLATE_LIST, typename VALUE_T>
 inline
 quantity_t<UOM_MEASURE_LIST, VALUE_T>
@@ -141,6 +148,7 @@ operator*(const quantity_t<UOM_MEASURE_LIST, VALUE_T> & a, const VALUE_T & f)
 	return quantity_t<UOM_MEASURE_LIST, VALUE_T>(a.value * f);
 }
 
+// Multiplication: dimensionless factor times quantities 
 template <UOM_MEASURE_TEMPLATE_LIST, typename VALUE_T>
 inline
 quantity_t<UOM_MEASURE_LIST, VALUE_T>
@@ -150,6 +158,7 @@ operator*(const VALUE_T & f, const quantity_t<UOM_MEASURE_LIST, VALUE_T> & a)
 	return quantity_t<UOM_MEASURE_LIST, VALUE_T>(f * a.value);
 }
 
+// Division: two quantities
 template <UOM_MEASURE_TEMPLATE_LIST1, UOM_MEASURE_TEMPLATE_LIST2, typename VALUE_T>
 inline
 quantity_t<
@@ -175,6 +184,7 @@ quantity_t<
 		VALUE_T>(a.value * b.value);
 }
 
+// Division: quantities by dimensionless factor 
 template <UOM_MEASURE_TEMPLATE_LIST, typename VALUE_T>
 inline
 quantity_t<UOM_MEASURE_LIST, VALUE_T>
@@ -183,6 +193,7 @@ operator/(const quantity_t<UOM_MEASURE_LIST, VALUE_T> & a, const VALUE_T & f)
 	return quantity_t<UOM_MEASURE_LIST, VALUE_T>(a.value / f);
 }
 
+// Division: dimensionless factor by quantities
 template <UOM_MEASURE_TEMPLATE_LIST, typename VALUE_T>
 inline
 quantity_t<UOM_MEASURE_LIST, VALUE_T>
