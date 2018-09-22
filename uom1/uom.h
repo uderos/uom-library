@@ -46,7 +46,7 @@ namespace uom
 ///////////////////////////////////////////////////////////////////////
 // The template structure used to define a qualtity with its dimentions
 ///////////////////////////////////////////////////////////////////////
-template <UOM_MEASURE_TEMPLATE_LIST, typename VALUE_T = double>
+template <typename VALUE_T, UOM_MEASURE_TEMPLATE_LIST>
 struct quantity_t
 {
 	using value_type = VALUE_T;
@@ -60,147 +60,147 @@ struct quantity_t
 
 	quantity_t();
 	quantity_t(const VALUE_T & init_value);
-	quantity_t(const quantity_t<UOM_MEASURE_LIST, VALUE_T> & rv);
+	quantity_t(const quantity_t<VALUE_T, UOM_MEASURE_LIST> & rv);
 
 	VALUE_T value; // The *only* data member - keep it this way
 };
 
 // Default constructor
-template <UOM_MEASURE_TEMPLATE_LIST, typename VALUE_T = double>
-quantity_t<UOM_MEASURE_LIST, VALUE_T>::quantity_t() :
+template <typename VALUE_T, UOM_MEASURE_TEMPLATE_LIST>
+quantity_t<VALUE_T, UOM_MEASURE_LIST>::quantity_t() :
 	value(VALUE_T(0))
 {
 	static_assert(
-		sizeof(quantity_t<UOM_MEASURE_LIST, VALUE_T>) ==
-		sizeof(quantity_t<UOM_MEASURE_LIST, VALUE_T>::value_type));
+		sizeof(quantity_t<VALUE_T, UOM_MEASURE_LIST>) ==
+		sizeof(quantity_t<VALUE_T, UOM_MEASURE_LIST>::value_type));
 	static_assert(
-		sizeof(quantity_t<UOM_MEASURE_LIST, VALUE_T>) ==
+		sizeof(quantity_t<VALUE_T, UOM_MEASURE_LIST>) ==
 		sizeof(this->value));
 }
 
 // Non-default Constructor
-template <UOM_MEASURE_TEMPLATE_LIST, typename VALUE_T>
-quantity_t<UOM_MEASURE_LIST, VALUE_T>::quantity_t(const VALUE_T & init_value) :
+template <typename VALUE_T, UOM_MEASURE_TEMPLATE_LIST>
+quantity_t<VALUE_T, UOM_MEASURE_LIST>::quantity_t(const VALUE_T & init_value) :
 	value(init_value)
 {
 }
 
 // Copy constructor
-template <UOM_MEASURE_TEMPLATE_LIST, typename VALUE_T = double>
-quantity_t<UOM_MEASURE_LIST, VALUE_T>::quantity_t(
-		const quantity_t<UOM_MEASURE_LIST, VALUE_T> & rv) :
+template <typename VALUE_T, UOM_MEASURE_TEMPLATE_LIST>
+quantity_t<VALUE_T, UOM_MEASURE_LIST>::quantity_t(
+		const quantity_t<VALUE_T, UOM_MEASURE_LIST> & rv) :
 	value(rv.value)
 {
 }
 
 // Sum operator
-template <UOM_MEASURE_TEMPLATE_LIST, typename VALUE_T>
+template <typename VALUE_T, UOM_MEASURE_TEMPLATE_LIST>
 inline
-quantity_t<UOM_MEASURE_LIST, VALUE_T>
-operator+(const quantity_t<UOM_MEASURE_LIST, VALUE_T> & a,
-		  const quantity_t<UOM_MEASURE_LIST, VALUE_T> & b)
+quantity_t<VALUE_T, UOM_MEASURE_LIST>
+operator+(const quantity_t<VALUE_T, UOM_MEASURE_LIST> & a,
+		  const quantity_t<VALUE_T, UOM_MEASURE_LIST> & b)
 {
-	return quantity_t<UOM_MEASURE_LIST, VALUE_T>(a.value + b.value);
+	return quantity_t<VALUE_T, UOM_MEASURE_LIST>(a.value + b.value);
 }
 
 // Subtraction operator
-template <UOM_MEASURE_TEMPLATE_LIST, typename VALUE_T>
+template <typename VALUE_T, UOM_MEASURE_TEMPLATE_LIST>
 inline 
-quantity_t<UOM_MEASURE_LIST, VALUE_T>
-operator-(const quantity_t<UOM_MEASURE_LIST, VALUE_T> & a,
-		  const quantity_t<UOM_MEASURE_LIST, VALUE_T> & b)
+quantity_t<VALUE_T, UOM_MEASURE_LIST>
+operator-(const quantity_t<VALUE_T, UOM_MEASURE_LIST> & a,
+		  const quantity_t<VALUE_T, UOM_MEASURE_LIST> & b)
 {
-	return quantity_t<UOM_MEASURE_LIST, VALUE_T>(a.value - b.value);
+	return quantity_t<VALUE_T, UOM_MEASURE_LIST>(a.value - b.value);
 }
 
 // Multiplication of two quantities
 template <UOM_MEASURE_TEMPLATE_LIST1, UOM_MEASURE_TEMPLATE_LIST2, typename VALUE_T>
 inline
 quantity_t<
+	VALUE_T,
 	MASS1 + MASS2, 
 	LENGTH1 + LENGTH2, 
 	TIME1 + TIME2, 
 	ECURRENT1 + ECURRENT2, 
 	TEMPERATURE1 + TEMPERATURE2,
 	AMOUNT1 + AMOUNT2,
-	LUMINOSITY1 + LUMINOSITY2,
-	VALUE_T>
-operator*(const quantity_t<UOM_MEASURE_LIST1, VALUE_T> & a,
-		  const quantity_t<UOM_MEASURE_LIST2, VALUE_T> & b)
+	LUMINOSITY1 + LUMINOSITY2>
+operator*(const quantity_t<VALUE_T, UOM_MEASURE_LIST1> & a,
+		  const quantity_t<VALUE_T, UOM_MEASURE_LIST2> & b)
 {
 	return quantity_t<
+		VALUE_T,
 		MASS1 + MASS2,
 		LENGTH1 + LENGTH2,
 		TIME1 + TIME2,
 		ECURRENT1 + ECURRENT2,
 		TEMPERATURE1 + TEMPERATURE2,
 		AMOUNT1 + AMOUNT2,
-		LUMINOSITY1 + LUMINOSITY2,
-		VALUE_T>(a.value * b.value);
+		LUMINOSITY1 + LUMINOSITY2>(a.value * b.value);
 }
 
 // Multiplication: quantities times dimensionless factor
-template <UOM_MEASURE_TEMPLATE_LIST, typename VALUE_T>
+template <typename VALUE_T, UOM_MEASURE_TEMPLATE_LIST>
 inline
-quantity_t<UOM_MEASURE_LIST, VALUE_T>
-operator*(const quantity_t<UOM_MEASURE_LIST, VALUE_T> & a, const VALUE_T & f)
+quantity_t<VALUE_T, UOM_MEASURE_LIST>
+operator*(const quantity_t<VALUE_T, UOM_MEASURE_LIST> & a, const VALUE_T & f)
 {
-	return quantity_t<UOM_MEASURE_LIST, VALUE_T>(a.value * f);
+	return quantity_t<VALUE_T, UOM_MEASURE_LIST>(a.value * f);
 }
 
 // Multiplication: dimensionless factor times quantities 
-template <UOM_MEASURE_TEMPLATE_LIST, typename VALUE_T>
+template <typename VALUE_T, UOM_MEASURE_TEMPLATE_LIST>
 inline
-quantity_t<UOM_MEASURE_LIST, VALUE_T>
-operator*(const VALUE_T & f, const quantity_t<UOM_MEASURE_LIST, VALUE_T> & a)
+quantity_t<VALUE_T, UOM_MEASURE_LIST>
+operator*(const VALUE_T & f, const quantity_t<VALUE_T, UOM_MEASURE_LIST> & a)
 	
 {
-	return quantity_t<UOM_MEASURE_LIST, VALUE_T>(f * a.value);
+	return quantity_t<VALUE_T, UOM_MEASURE_LIST>(f * a.value);
 }
 
 // Division: two quantities
 template <UOM_MEASURE_TEMPLATE_LIST1, UOM_MEASURE_TEMPLATE_LIST2, typename VALUE_T>
 inline
 quantity_t<
+	VALUE_T,
 	MASS1 - MASS2,
 	LENGTH1 - LENGTH2,
 	TIME1 - TIME2,
 	ECURRENT1 - ECURRENT2,
 	TEMPERATURE1 - TEMPERATURE2,
 	AMOUNT1 - AMOUNT2,
-	LUMINOSITY1 - LUMINOSITY2,
-	VALUE_T>
-	operator/(const quantity_t<UOM_MEASURE_LIST1, VALUE_T> & a,
-			  const quantity_t<UOM_MEASURE_LIST2, VALUE_T> & b)
+	LUMINOSITY1 - LUMINOSITY2>
+	operator/(const quantity_t<VALUE_T, UOM_MEASURE_LIST1> & a,
+			  const quantity_t<VALUE_T, UOM_MEASURE_LIST2> & b)
 {
 	return quantity_t<
+		VALUE_T,
 		MASS1 - MASS2,
 		LENGTH1 - LENGTH2,
 		TIME1 - TIME2,
 		ECURRENT1 - ECURRENT2,
 		TEMPERATURE1 - TEMPERATURE2,
 		AMOUNT1 - AMOUNT2,
-		LUMINOSITY1 - LUMINOSITY2,
-		VALUE_T>(a.value * b.value);
+		LUMINOSITY1 - LUMINOSITY2>(a.value * b.value);
 }
 
 // Division: quantities by dimensionless factor 
-template <UOM_MEASURE_TEMPLATE_LIST, typename VALUE_T>
+template <typename VALUE_T, UOM_MEASURE_TEMPLATE_LIST>
 inline
-quantity_t<UOM_MEASURE_LIST, VALUE_T>
-operator/(const quantity_t<UOM_MEASURE_LIST, VALUE_T> & a, const VALUE_T & f)
+quantity_t<VALUE_T, UOM_MEASURE_LIST>
+operator/(const quantity_t<VALUE_T, UOM_MEASURE_LIST> & a, const VALUE_T & f)
 {
-	return quantity_t<UOM_MEASURE_LIST, VALUE_T>(a.value / f);
+	return quantity_t<VALUE_T, UOM_MEASURE_LIST>(a.value / f);
 }
 
 // Division: dimensionless factor by quantities
-template <UOM_MEASURE_TEMPLATE_LIST, typename VALUE_T>
+template <typename VALUE_T, UOM_MEASURE_TEMPLATE_LIST>
 inline
-quantity_t<UOM_MEASURE_LIST, VALUE_T>
-operator/(const VALUE_T & f, const quantity_t<UOM_MEASURE_LIST, VALUE_T> & a)
+quantity_t<VALUE_T, UOM_MEASURE_LIST>
+operator/(const VALUE_T & f, const quantity_t<VALUE_T, UOM_MEASURE_LIST> & a)
 
 {
-	return quantity_t<UOM_MEASURE_LIST, VALUE_T>(f / a.value);
+	return quantity_t<VALUE_T, UOM_MEASURE_LIST>(f / a.value);
 }
 
 
@@ -208,25 +208,25 @@ operator/(const VALUE_T & f, const quantity_t<UOM_MEASURE_LIST, VALUE_T> & a)
 // Definitions of each SI base dimensions
 ///////////////////////////////////////////////////////////////////////
 template <typename VALUE_T = double>
-using mass_t = quantity_t<1, 0, 0, 0, 0, 0, 0, VALUE_T>;
+using mass_t = quantity_t<VALUE_T, 1, 0, 0, 0, 0, 0, 0>;
 
 template <typename VALUE_T = double>
-using length_t = quantity_t<0, 1, 0, 0, 0, 0, 0, VALUE_T>;
+using length_t = quantity_t<VALUE_T, 0, 1, 0, 0, 0, 0, 0>;
 
 template <typename VALUE_T = double>
-using time_t = quantity_t<0, 0, 1, 0, 0, 0, 0, VALUE_T>;
+using time_t = quantity_t<VALUE_T, 0, 0, 1, 0, 0, 0, 0>;
 
 template <typename VALUE_T = double>
-using ecurrent_t = quantity_t<0, 0, 0, 1, 0, 0, 0, VALUE_T>;
+using ecurrent_t = quantity_t<VALUE_T, 0, 0, 0, 1, 0, 0, 0>;
 
 template <typename VALUE_T = double>
-using temperature_t = quantity_t<0, 0, 0, 0, 1, 0, 0, VALUE_T>;
+using temperature_t = quantity_t<VALUE_T, 0, 0, 0, 0, 1, 0, 0>;
 
 template <typename VALUE_T = double>
-using amount_t = quantity_t<0, 0, 0, 0, 0, 1, 0, VALUE_T>;
+using amount_t = quantity_t<VALUE_T, 0, 0, 0, 0, 0, 1, 0>;
 
 template <typename VALUE_T = double>
-using luminosity_t = quantity_t<0, 0, 0, 0, 0, 0, 1, VALUE_T>;
+using luminosity_t = quantity_t<VALUE_T, 0, 0, 0, 0, 0, 0, 1>;
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -234,19 +234,19 @@ using luminosity_t = quantity_t<0, 0, 0, 0, 0, 0, 1, VALUE_T>;
 ///////////////////////////////////////////////////////////////////////
 
 template <typename VALUE_T = double>
-using speed_t = quantity_t<0, 1, -1, 0, 0, 0, 0, VALUE_T>;
+using speed_t = quantity_t<VALUE_T, 0, 1, -1, 0, 0, 0, 0>;
 
 template <typename VALUE_T = double>
-using acceleration_t = quantity_t<0, 1, -2, 0, 0, 0, 0, VALUE_T>;
+using acceleration_t = quantity_t<VALUE_T, 0, 1, -2, 0, 0, 0, 0>;
 
 template <typename VALUE_T = double>
-using force_t = quantity_t<1, 1, -2, 0, 0, 0, 0, VALUE_T>;
+using force_t = quantity_t<VALUE_T, 1, 1, -2, 0, 0, 0, 0>;
 
 template <typename VALUE_T = double>
-using energy_t = quantity_t<1, 2, -2, 0, 0, 0, 0, VALUE_T>;
+using energy_t = quantity_t<VALUE_T, 1, 2, -2, 0, 0, 0, 0>;
 
 template <typename VALUE_T = double>
-using epotential_t = quantity_t<1, 2, -3, -1, 0, 0, 0, VALUE_T>;
+using epotential_t = quantity_t<VALUE_T, 1, 2, -3, -1, 0, 0, 0>;
 
 
 ///////////////////////////////////////////////////////////////////////
