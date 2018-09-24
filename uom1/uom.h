@@ -1,6 +1,7 @@
 #ifndef UDR_UOM_H
 #define UDR_UOM_H
 
+#include <cmath>
 #include <ratio>
 #ifdef OUM_STRING_SUPPORT
 #include <sstream>
@@ -20,7 +21,7 @@
 	typename AMOUNT,				\
 	typename LUMINTENSITY			\
 
-#define UOM_MEASURE_LIST1 MASS1, LENGTH1, TIME1, ECURRENT1, TEMPERATURE1, AMOUNT1, LUMINOSITY1
+#define UOM_MEASURE_LIST1 MASS1, LENGTH1, TIME1, ECURRENT1, TEMPERATURE1, AMOUNT1, LUMINTENSITY1
 #define UOM_MEASURE_TEMPLATE_LIST1	\
 	typename MASS1,					\
 	typename LENGTH1,				\
@@ -28,9 +29,9 @@
 	typename ECURRENT1,				\
 	typename TEMPERATURE1,			\
 	typename AMOUNT1,				\
-	typename LUMINOSITY1			\
+	typename LUMINTENSITY1			\
 
-#define UOM_MEASURE_LIST2 MASS2, LENGTH2, TIME2, ECURRENT2, TEMPERATURE2, AMOUNT2, LUMINOSITY2
+#define UOM_MEASURE_LIST2 MASS2, LENGTH2, TIME2, ECURRENT2, TEMPERATURE2, AMOUNT2, LUMINTENSITY2
 #define UOM_MEASURE_TEMPLATE_LIST2	\
 	typename MASS2,						\
 	typename LENGTH2,					\
@@ -38,7 +39,7 @@
 	typename ECURRENT2,					\
 	typename TEMPERATURE2,				\
 	typename AMOUNT2,					\
-	typename LUMINOSITY2				\
+	typename LUMINTENSITY2				\
 
 
 namespace uom
@@ -125,7 +126,7 @@ quantity_t<
 	std::ratio_add<ECURRENT1, ECURRENT2>,
 	std::ratio_add<TEMPERATURE1, TEMPERATURE2>,
 	std::ratio_add<AMOUNT1, AMOUNT2>,
-	std::ratio_add<LUMINOSITY1, LUMINOSITY2>>
+	std::ratio_add<LUMINTENSITY1, LUMINTENSITY2>>
 operator*(const quantity_t<VALUE_T, UOM_MEASURE_LIST1> & a,
 		  const quantity_t<VALUE_T, UOM_MEASURE_LIST2> & b)
 {
@@ -137,7 +138,7 @@ operator*(const quantity_t<VALUE_T, UOM_MEASURE_LIST1> & a,
 		std::ratio_add<ECURRENT1, ECURRENT2>,
 		std::ratio_add<TEMPERATURE1, TEMPERATURE2>,
 		std::ratio_add<AMOUNT1, AMOUNT2>,
-		std::ratio_add<LUMINOSITY1, LUMINOSITY2>>(a.value * b.value);
+		std::ratio_add<LUMINTENSITY1, LUMINTENSITY2>>(a.value * b.value);
 }
 
 // Multiplication: quantities times dimensionless factor
@@ -170,7 +171,7 @@ quantity_t<
 	std::ratio_subtract<ECURRENT1, ECURRENT2>,
 	std::ratio_subtract<TEMPERATURE1, TEMPERATURE2>,
 	std::ratio_subtract<AMOUNT1, AMOUNT2>,
-	std::ratio_subtract<LUMINOSITY1, LUMINOSITY2>>
+	std::ratio_subtract<LUMINTENSITY1, LUMINTENSITY2>>
 	operator/(const quantity_t<VALUE_T, UOM_MEASURE_LIST1> & a,
 			  const quantity_t<VALUE_T, UOM_MEASURE_LIST2> & b)
 {
@@ -182,7 +183,7 @@ quantity_t<
 		std::ratio_subtract<ECURRENT1, ECURRENT2>,
 		std::ratio_subtract<TEMPERATURE1, TEMPERATURE2>,
 		std::ratio_subtract<AMOUNT1, AMOUNT2>,
-		std::ratio_subtract<LUMINOSITY1, LUMINOSITY2>>(a.value * b.value);
+		std::ratio_subtract<LUMINTENSITY1, LUMINTENSITY2>>(a.value * b.value);
 }
 
 // Division: quantities by dimensionless factor 
@@ -203,6 +204,32 @@ operator/(const VALUE_T & f, const quantity_t<VALUE_T, UOM_MEASURE_LIST> & a)
 {
 	return quantity_t<VALUE_T, UOM_MEASURE_LIST>(f / a.value);
 }
+
+// Square rooot of quantity
+template <typename VALUE_T, UOM_MEASURE_TEMPLATE_LIST>
+inline
+quantity_t<
+	VALUE_T,
+	std::ratio_divide<MASS, std::ratio<2>>,
+	std::ratio_divide<LENGTH, std::ratio<2>>,
+	std::ratio_divide<TIME, std::ratio<2>>,
+	std::ratio_divide<ECURRENT, std::ratio<2>>,
+	std::ratio_divide<TEMPERATURE, std::ratio<2>>,
+	std::ratio_divide<AMOUNT, std::ratio<2>>,
+	std::ratio_divide<LUMINTENSITY, std::ratio<2>> >
+sqrt(const quantity_t<VALUE_T, UOM_MEASURE_LIST> & v)
+{
+	return quantity_t<
+		VALUE_T,
+		std::ratio_divide<MASS, std::ratio<2>>,
+		std::ratio_divide<LENGTH, std::ratio<2>>,
+		std::ratio_divide<TIME, std::ratio<2>>,
+		std::ratio_divide<ECURRENT, std::ratio<2>>,
+		std::ratio_divide<TEMPERATURE, std::ratio<2>>,
+		std::ratio_divide<AMOUNT, std::ratio<2>>,
+		std::ratio_divide<LUMINTENSITY, std::ratio<2>> >(std::sqrt(v.value));
+}
+
 
 
 ///////////////////////////////////////////////////////////////////////
