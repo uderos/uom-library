@@ -1,6 +1,7 @@
 #ifndef UDR_UOM_H
 #define UDR_UOM_H
 
+#include <ratio>
 #ifdef OUM_STRING_SUPPORT
 #include <sstream>
 #endif // OUM_STRING_SUPPORT
@@ -11,33 +12,33 @@
 
 #define UOM_MEASURE_LIST MASS, LENGTH, TIME, ECURRENT, TEMPERATURE, AMOUNT, LUMINTENSITY
 #define UOM_MEASURE_TEMPLATE_LIST	\
-	int MASS,						\
-	int LENGTH,						\
-	int TIME,						\
-	int ECURRENT,					\
-	int TEMPERATURE,				\
-	int AMOUNT,						\
-	int LUMINTENSITY				\
+	typename MASS,					\
+	typename LENGTH,				\
+	typename TIME,					\
+	typename ECURRENT,				\
+	typename TEMPERATURE,			\
+	typename AMOUNT,				\
+	typename LUMINTENSITY			\
 
 #define UOM_MEASURE_LIST1 MASS1, LENGTH1, TIME1, ECURRENT1, TEMPERATURE1, AMOUNT1, LUMINOSITY1
 #define UOM_MEASURE_TEMPLATE_LIST1	\
-	int MASS1,						\
-	int LENGTH1,					\
-	int TIME1,						\
-	int ECURRENT1,					\
-	int TEMPERATURE1,				\
-	int AMOUNT1,					\
-	int LUMINOSITY1					\
+	typename MASS1,					\
+	typename LENGTH1,				\
+	typename TIME1,					\
+	typename ECURRENT1,				\
+	typename TEMPERATURE1,			\
+	typename AMOUNT1,				\
+	typename LUMINOSITY1			\
 
 #define UOM_MEASURE_LIST2 MASS2, LENGTH2, TIME2, ECURRENT2, TEMPERATURE2, AMOUNT2, LUMINOSITY2
 #define UOM_MEASURE_TEMPLATE_LIST2	\
-	int MASS2,						\
-	int LENGTH2,					\
-	int TIME2,						\
-	int ECURRENT2,					\
-	int TEMPERATURE2,				\
-	int AMOUNT2,					\
-	int LUMINOSITY2					\
+	typename MASS2,						\
+	typename LENGTH2,					\
+	typename TIME2,						\
+	typename ECURRENT2,					\
+	typename TEMPERATURE2,				\
+	typename AMOUNT2,					\
+	typename LUMINOSITY2				\
 
 
 namespace uom
@@ -50,13 +51,13 @@ template <typename VALUE_T, UOM_MEASURE_TEMPLATE_LIST>
 struct quantity_t
 {
 	using value_type = VALUE_T;
-	static constexpr int mass() { return MASS; }
-	static constexpr int length() { return LENGTH; }
-	static constexpr int time() { return TIME; }
-	static constexpr int ecurrent() { return ECURRENT; }
-	static constexpr int temperature() { return TEMPERATURE; }
-	static constexpr int amount() { return AMOUNT; }
-	static constexpr int luminosity() { return LUMINTENSITY; }
+	static constexpr VALUE_T mass() { return VALUE_T(MASS::num) / VALUE_T(MASS::den); }
+	static constexpr VALUE_T length() { return VALUE_T(LENGTH::num) / VALUE_T(LENGTH::den); }
+	static constexpr VALUE_T time() { return VALUE_T(TIME::num) / VALUE_T(TIME::den); }
+	static constexpr VALUE_T ecurrent() { return VALUE_T(ECURRENT::num) / VALUE_T(ECURRENT::den); }
+	static constexpr VALUE_T temperature()  { return VALUE_T(TEMPERATURE::num) / VALUE_T(TEMPERATURE::den); }
+	static constexpr VALUE_T amount() { return VALUE_T(AMOUNT::num) / VALUE_T(AMOUNT::den); }
+	static constexpr VALUE_T luminosity() { return VALUE_T(LUMINTENSITY::num) / VALUE_T(LUMINTENSITY::den); }
 
 	quantity_t();
 	quantity_t(const VALUE_T & init_value);
@@ -118,25 +119,25 @@ template <UOM_MEASURE_TEMPLATE_LIST1, UOM_MEASURE_TEMPLATE_LIST2, typename VALUE
 inline
 quantity_t<
 	VALUE_T,
-	MASS1 + MASS2, 
-	LENGTH1 + LENGTH2, 
-	TIME1 + TIME2, 
-	ECURRENT1 + ECURRENT2, 
-	TEMPERATURE1 + TEMPERATURE2,
-	AMOUNT1 + AMOUNT2,
-	LUMINOSITY1 + LUMINOSITY2>
+	std::ratio_add<MASS1, MASS2>, 
+	std::ratio_add<LENGTH1, LENGTH2>,
+	std::ratio_add<TIME1, TIME2>,
+	std::ratio_add<ECURRENT1, ECURRENT2>,
+	std::ratio_add<TEMPERATURE1, TEMPERATURE2>,
+	std::ratio_add<AMOUNT1, AMOUNT2>,
+	std::ratio_add<LUMINOSITY1, LUMINOSITY2>>
 operator*(const quantity_t<VALUE_T, UOM_MEASURE_LIST1> & a,
 		  const quantity_t<VALUE_T, UOM_MEASURE_LIST2> & b)
 {
 	return quantity_t<
 		VALUE_T,
-		MASS1 + MASS2,
-		LENGTH1 + LENGTH2,
-		TIME1 + TIME2,
-		ECURRENT1 + ECURRENT2,
-		TEMPERATURE1 + TEMPERATURE2,
-		AMOUNT1 + AMOUNT2,
-		LUMINOSITY1 + LUMINOSITY2>(a.value * b.value);
+		std::ratio_add<MASS1, MASS2>,
+		std::ratio_add<LENGTH1, LENGTH2>,
+		std::ratio_add<TIME1, TIME2>,
+		std::ratio_add<ECURRENT1, ECURRENT2>,
+		std::ratio_add<TEMPERATURE1, TEMPERATURE2>,
+		std::ratio_add<AMOUNT1, AMOUNT2>,
+		std::ratio_add<LUMINOSITY1, LUMINOSITY2>>(a.value * b.value);
 }
 
 // Multiplication: quantities times dimensionless factor
@@ -163,25 +164,25 @@ template <UOM_MEASURE_TEMPLATE_LIST1, UOM_MEASURE_TEMPLATE_LIST2, typename VALUE
 inline
 quantity_t<
 	VALUE_T,
-	MASS1 - MASS2,
-	LENGTH1 - LENGTH2,
-	TIME1 - TIME2,
-	ECURRENT1 - ECURRENT2,
-	TEMPERATURE1 - TEMPERATURE2,
-	AMOUNT1 - AMOUNT2,
-	LUMINOSITY1 - LUMINOSITY2>
+	std::ratio_subtract<MASS1, MASS2>,
+	std::ratio_subtract<LENGTH1, LENGTH2>,
+	std::ratio_subtract<TIME1, TIME2>,
+	std::ratio_subtract<ECURRENT1, ECURRENT2>,
+	std::ratio_subtract<TEMPERATURE1, TEMPERATURE2>,
+	std::ratio_subtract<AMOUNT1, AMOUNT2>,
+	std::ratio_subtract<LUMINOSITY1, LUMINOSITY2>>
 	operator/(const quantity_t<VALUE_T, UOM_MEASURE_LIST1> & a,
 			  const quantity_t<VALUE_T, UOM_MEASURE_LIST2> & b)
 {
 	return quantity_t<
 		VALUE_T,
-		MASS1 - MASS2,
-		LENGTH1 - LENGTH2,
-		TIME1 - TIME2,
-		ECURRENT1 - ECURRENT2,
-		TEMPERATURE1 - TEMPERATURE2,
-		AMOUNT1 - AMOUNT2,
-		LUMINOSITY1 - LUMINOSITY2>(a.value * b.value);
+		std::ratio_subtract<MASS1, MASS2>,
+		std::ratio_subtract<LENGTH1, LENGTH2>,
+		std::ratio_subtract<TIME1, TIME2>,
+		std::ratio_subtract<ECURRENT1, ECURRENT2>,
+		std::ratio_subtract<TEMPERATURE1, TEMPERATURE2>,
+		std::ratio_subtract<AMOUNT1, AMOUNT2>,
+		std::ratio_subtract<LUMINOSITY1, LUMINOSITY2>>(a.value * b.value);
 }
 
 // Division: quantities by dimensionless factor 
@@ -208,25 +209,25 @@ operator/(const VALUE_T & f, const quantity_t<VALUE_T, UOM_MEASURE_LIST> & a)
 // Definitions of each SI base dimensions
 ///////////////////////////////////////////////////////////////////////
 template <typename VALUE_T = double>
-using mass_t = quantity_t<VALUE_T, 1, 0, 0, 0, 0, 0, 0>;
+using mass_t = quantity_t<VALUE_T, std::ratio<1>, std::ratio<0>, std::ratio<0>, std::ratio<0>, std::ratio<0>, std::ratio<0>, std::ratio<0>>;
 
 template <typename VALUE_T = double>
-using length_t = quantity_t<VALUE_T, 0, 1, 0, 0, 0, 0, 0>;
+using length_t = quantity_t<VALUE_T, std::ratio<0>, std::ratio<1>, std::ratio<0>, std::ratio<0>, std::ratio<0>, std::ratio<0>, std::ratio<0>>;
 
 template <typename VALUE_T = double>
-using time_t = quantity_t<VALUE_T, 0, 0, 1, 0, 0, 0, 0>;
+using time_t = quantity_t<VALUE_T, std::ratio<0>, std::ratio<0>, std::ratio<1>, std::ratio<0>, std::ratio<0>, std::ratio<0>, std::ratio<0>>;
 
 template <typename VALUE_T = double>
-using ecurrent_t = quantity_t<VALUE_T, 0, 0, 0, 1, 0, 0, 0>;
+using ecurrent_t = quantity_t<VALUE_T, std::ratio<0>, std::ratio<0>, std::ratio<0>, std::ratio<1>, std::ratio<0>, std::ratio<0>, std::ratio<0>>;
 
 template <typename VALUE_T = double>
-using temperature_t = quantity_t<VALUE_T, 0, 0, 0, 0, 1, 0, 0>;
+using temperature_t = quantity_t<VALUE_T, std::ratio<0>, std::ratio<0>, std::ratio<0>, std::ratio<0>, std::ratio<1>, std::ratio<0>, std::ratio<0>>;
 
 template <typename VALUE_T = double>
-using amount_t = quantity_t<VALUE_T, 0, 0, 0, 0, 0, 1, 0>;
+using amount_t = quantity_t<VALUE_T, std::ratio<0>, std::ratio<0>, std::ratio<0>, std::ratio<0>, std::ratio<0>, std::ratio<1>, std::ratio<0>>;
 
 template <typename VALUE_T = double>
-using luminosity_t = quantity_t<VALUE_T, 0, 0, 0, 0, 0, 0, 1>;
+using luminosity_t = quantity_t<VALUE_T, std::ratio<0>, std::ratio<0>, std::ratio<0>, std::ratio<0>, std::ratio<0>, std::ratio<0>, std::ratio<1>>;
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -234,19 +235,19 @@ using luminosity_t = quantity_t<VALUE_T, 0, 0, 0, 0, 0, 0, 1>;
 ///////////////////////////////////////////////////////////////////////
 
 template <typename VALUE_T = double>
-using speed_t = quantity_t<VALUE_T, 0, 1, -1, 0, 0, 0, 0>;
+using speed_t = quantity_t<VALUE_T, std::ratio<0>, std::ratio<1>, std::ratio<-1>, std::ratio<0>, std::ratio<0>, std::ratio<0>, std::ratio<0>>;
 
 template <typename VALUE_T = double>
-using acceleration_t = quantity_t<VALUE_T, 0, 1, -2, 0, 0, 0, 0>;
+using acceleration_t = quantity_t<VALUE_T, std::ratio<0>, std::ratio<1>, std::ratio<-2>, std::ratio<0>, std::ratio<0>, std::ratio<0>, std::ratio<0>>;
 
 template <typename VALUE_T = double>
-using force_t = quantity_t<VALUE_T, 1, 1, -2, 0, 0, 0, 0>;
+using force_t = quantity_t<VALUE_T, std::ratio<1>, std::ratio<1>, std::ratio<-2>, std::ratio<0>, std::ratio<0>, std::ratio<0>, std::ratio<0>>;
 
 template <typename VALUE_T = double>
-using energy_t = quantity_t<VALUE_T, 1, 2, -2, 0, 0, 0, 0>;
+using energy_t = quantity_t<VALUE_T, std::ratio<1>, std::ratio<2>, std::ratio<-2>, std::ratio<0>, std::ratio<0>, std::ratio<0>, std::ratio<0>>;
 
 template <typename VALUE_T = double>
-using epotential_t = quantity_t<VALUE_T, 1, 2, -3, -1, 0, 0, 0>;
+using epotential_t = quantity_t<VALUE_T, std::ratio<1>, std::ratio<2>, std::ratio<-3>, std::ratio<-1>, std::ratio<0>, std::ratio<0>, std::ratio<0>>;
 
 
 ///////////////////////////////////////////////////////////////////////
