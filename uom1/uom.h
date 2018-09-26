@@ -46,6 +46,19 @@ namespace uom
 {
 
 ///////////////////////////////////////////////////////////////////////
+// Some utilities
+///////////////////////////////////////////////////////////////////////
+
+// Convert a ratio into a floating point number at compile time
+template <typename RATIO_T, typename VALUE_T>
+struct ratio_to_float
+{
+	static constexpr VALUE_T ratio{ VALUE_T((RATIO_T::num) / VALUE_T(RATIO_T::den)) };
+};
+
+
+
+///////////////////////////////////////////////////////////////////////
 // The template structure used to define a qualtity with its dimentions
 ///////////////////////////////////////////////////////////////////////
 template <typename VALUE_T, UOM_MEASURE_TEMPLATE_LIST>
@@ -172,7 +185,7 @@ quantity_t<
 	std::ratio_subtract<TEMPERATURE1, TEMPERATURE2>,
 	std::ratio_subtract<AMOUNT1, AMOUNT2>,
 	std::ratio_subtract<LUMINTENSITY1, LUMINTENSITY2>>
-	operator/(const quantity_t<VALUE_T, UOM_MEASURE_LIST1> & a,
+operator/(const quantity_t<VALUE_T, UOM_MEASURE_LIST1> & a,
 			  const quantity_t<VALUE_T, UOM_MEASURE_LIST2> & b)
 {
 	return quantity_t<
@@ -205,6 +218,7 @@ operator/(const VALUE_T & f, const quantity_t<VALUE_T, UOM_MEASURE_LIST> & a)
 	return quantity_t<VALUE_T, UOM_MEASURE_LIST>(f / a.value);
 }
 
+
 // Square rooot of quantity
 template <typename VALUE_T, UOM_MEASURE_TEMPLATE_LIST>
 inline
@@ -230,6 +244,32 @@ sqrt(const quantity_t<VALUE_T, UOM_MEASURE_LIST> & v)
 		std::ratio_divide<LUMINTENSITY, std::ratio<2>> >(std::sqrt(v.value));
 }
 
+// power of quantity
+template <typename EXPONENT_T, typename VALUE_T, UOM_MEASURE_TEMPLATE_LIST>
+inline
+quantity_t<
+	VALUE_T,
+	std::ratio_multiply<MASS, EXPONENT_T>,
+	std::ratio_multiply<LENGTH, EXPONENT_T>,
+	std::ratio_multiply<TIME, EXPONENT_T>,
+	std::ratio_multiply<ECURRENT, EXPONENT_T>,
+	std::ratio_multiply<TEMPERATURE, EXPONENT_T>,
+	std::ratio_multiply<AMOUNT, EXPONENT_T>,
+	std::ratio_multiply<LUMINTENSITY, EXPONENT_T> >
+pow(const quantity_t<VALUE_T, UOM_MEASURE_LIST> & v)
+{
+	constexpr VALUE_T exponent = ratio_to_float<EXPONENT_T, VALUE_T>::ratio;
+	const VALUE_T new_value = std::pow(v.value, exponent);
+	return quantity_t<
+		VALUE_T,
+		std::ratio_multiply<MASS, EXPONENT_T>,
+		std::ratio_multiply<LENGTH, EXPONENT_T>,
+		std::ratio_multiply<TIME, EXPONENT_T>,
+		std::ratio_multiply<ECURRENT, EXPONENT_T>,
+		std::ratio_multiply<TEMPERATURE, EXPONENT_T>,
+		std::ratio_multiply<AMOUNT, EXPONENT_T>,
+		std::ratio_multiply<LUMINTENSITY, EXPONENT_T> >(new_value);
+}
 
 
 ///////////////////////////////////////////////////////////////////////
